@@ -19,7 +19,7 @@ service Admin {
 message Command {
   string In = 1;
   string Out = 2;
-  string Name = 3
+  string Name = 3;
   string Register = 4;
 }
 
