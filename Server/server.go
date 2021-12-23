@@ -20,7 +20,7 @@ type implantServer struct {
 }
 
 type adminServer struct {
-	work, output chan *grpcapi.Command
+	work, output, name chan *grpcapi.Command
 }
 
 func NewImplantServer(work, output chan *grpcapi.Command) *implantServer {
