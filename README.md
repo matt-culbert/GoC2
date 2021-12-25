@@ -28,3 +28,8 @@ go get github.com/golang/protobuf/protoc-gen-go</code>
 ```
   
 Then run <code> protoc -I . implant.proto --go_out=plugins=grpc:./ </code> in the directory of the implant.proto file.
+
+Put the generated pb file into your Go root, for me it was 
+```
+/usr/lib/go-1.17/src/server/grpcapi
+```
