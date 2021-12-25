@@ -9,7 +9,7 @@ import (
 	"log"
 	"errors"
 	"net"
-	"github.com/matt-culbert/bhg/ch-14/grpcapi"
+	grpcapi "server/grpcapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
