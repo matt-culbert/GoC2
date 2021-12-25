@@ -33,3 +33,10 @@ Put the generated pb file into your Go root, for me it was
 ```
 /usr/lib/go-1.17/src/server/grpcapi
 ```
+
+Import it with
+```
+import (
+  grpcapi "server/grpcapi"
+)
+```
