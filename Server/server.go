@@ -65,9 +65,11 @@ func (s *adminServer) RunCommand(ctx context.Context, cmd *grpcapi.Command) (*gr
 	return res, nil
 }
 
-func (s *implantServer) RegisterImplant(ctx context.Context, whoami *grpcapi.Command) (*grpcapi.Empty, error) {
-	log.Printf("New beacon: %c", whoami)
-	return &grpcapi.Empty{},nil
+func (s *implantServer) fetchName(ctx context.Context, empty *grpcapi.Command) (*grpcapi.Empty, error) {
+	log.Printf("New beacon: test")
+	var name = "test"
+
+	return name, nil
 }
 
 func main() {
