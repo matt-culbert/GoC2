@@ -24,7 +24,9 @@ To generate implant.pb.go from implant.proto ensure protobuf is installed as wel
 ```
 sudo apt install protobuf-compiler
 
-go get github.com/golang/protobuf/protoc-gen-go</code>
+sudo apt install golang-goprotobuf-dev
+
+go get github.com/golang/protobuf/protoc-gen-go
 ```
   
 Then run <code> protoc -I . implant.proto --go_out=plugins=grpc:./ </code> in the directory of the implant.proto file.
