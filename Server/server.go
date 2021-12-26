@@ -16,17 +16,20 @@ import (
 )
 
 type implantServer struct {
-	work, output, whoami chan *grpcapi.Command // expect the whoami parameter from the beacon
+	work, output chan *grpcapi.Command // expect the whoami parameter from the beacon
+	name string
 }
 
 type adminServer struct {
-	work, output, name chan *grpcapi.Command
+	work, output chan *grpcapi.Command
 }
 
 func NewImplantServer(work, output chan *grpcapi.Command) *implantServer {
 	s := new(implantServer)
+	name = "test"
 	s.work = work
 	s.output = output
+	s.name = name
 	return s
 }
 
@@ -67,7 +70,8 @@ func (s *adminServer) RunCommand(ctx context.Context, cmd *grpcapi.Command) (*gr
 
 func (s *implantServer) fetchName(ctx context.Context, empty *grpcapi.Command) (*grpcapi.Empty, error) {
 	log.Printf("New beacon: test")
-	var name = "test"
+	var name = new(grpcapi.Name)
+	name = s.name
 
 	return name, nil
 }
