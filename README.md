@@ -1,4 +1,4 @@
-# Switchblade
+# GoC2
 
 A post exploitation framework based on the framework built in Blackhat-Go
 
